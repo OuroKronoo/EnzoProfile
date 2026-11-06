@@ -1,0 +1,6 @@
+.git
+.gitattributes
+.gitignore
+.dockerignore
+README.md
+data/config.json

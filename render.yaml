@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: enzo-profile
+    runtime: docker
+    plan: starter # persistent disks need a paid instance type
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    disk:
+      name: portfolio-data
+      mountPath: /var/data
+      sizeGB: 1
