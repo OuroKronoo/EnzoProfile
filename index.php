@@ -10,6 +10,14 @@ usort($projects, fn($a, $b) => ($a['createdAt'] ?? 0) <=> ($b['createdAt'] ?? 0)
 $avg = $reviews ? array_sum(array_map(fn($r) => (int)($r['rating'] ?? 0), $reviews)) / count($reviews) : 0;
 $email = 'kimralfonzodiwa@gmail.com';
 
+/* Skills list. Drop a picture per item at assets/skills/01.webp, 02.webp, ... to replace the placeholder panels. */
+$skills = [
+    ['title' => 'Front end.',      'text' => 'Responsive interfaces that hold up on every screen, from landing pages to full single-page apps.', 'chips' => ['HTML5', 'CSS3', 'JavaScript', 'Vue.js']],
+    ['title' => 'Back end & data.', 'text' => 'Databases, dashboards and the logic behind them: logins, records, reports and predictions.',       'chips' => ['PHP', 'Node.js', 'MySQL']],
+    ['title' => 'Design.',          'text' => 'Layouts worked out in Figma first, so you see the site before a line of code is written.',          'chips' => ['Figma', 'UI Design', 'Prototyping', 'Responsive Layouts']],
+    ['title' => 'Ship.',            'text' => 'Versioned with Git, checked on real devices, and handed over ready to run.',                        'chips' => ['Git']],
+];
+
 /** First image of a project, or ''. */
 function first_img(array $p): string
 {
@@ -26,6 +34,7 @@ function first_img(array $p): string
 <meta name="description" content="Portfolio of Kim Ralfonzo Diwa, freelance web developer: data platforms, ticketing systems, and clean responsive websites.">
 <meta property="og:title" content="Kim Ralfonzo Diwa | Freelance Web Developer">
 <meta property="og:image" content="assets/profile-photo.webp">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -39,7 +48,7 @@ function first_img(array $p): string
 </div>
 
 <nav class="topbar" aria-label="Main">
-  <a href="#top" class="brand">KRD<span>.</span></a>
+  <a href="#top" class="brand" aria-label="Kim Ralfonzo Diwa, back to top"><img src="assets/logo.svg" alt="" width="34" height="34"></a>
   <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
     <span>MENU</span><i class="bars" aria-hidden="true"></i>
   </button>
@@ -60,64 +69,69 @@ function first_img(array $p): string
 </div>
 
 <header class="hero" id="top">
-  <p class="eyebrow reveal"><span class="dash"></span>Freelance Web Developer</p>
-  <h1 class="hero-title">
-    <span class="line"><span class="word">Kim Ralfonzo</span></span>
-    <span class="line"><span class="word">Diwa<em>.</em></span></span>
-  </h1>
-  <div class="hero-foot">
-    <p class="lede reveal">I design and build clean, working websites, from environmental data platforms to ticketing systems. If you can sketch it, I can ship it.</p>
-    <div class="hero-photo reveal" id="hero-photo"><img src="assets/profile-photo.webp" alt="Kim Ralfonzo Diwa"></div>
+  <div class="hero-meta reveal">
+    <p class="eyebrow"><span class="dash"></span>Freelance Web Developer</p>
+    <p class="mono-label hero-index">PORTFOLIO — <?= date('Y') ?></p>
+  </div>
+  <div class="hero-name">
+    <h1 class="hero-title">
+      <span class="line"><span class="word">Kim</span></span>
+      <span class="line"><span class="word">Ralfonzo</span></span>
+      <span class="line"><span class="word">Diwa<em>.</em></span></span>
+    </h1>
+    <div class="hero-aside reveal">
+      <div class="hero-photo" id="hero-photo"><img src="assets/profile-photo.webp" alt="Kim Ralfonzo Diwa"></div>
+      <p class="lede">I design and build clean, working websites, from environmental data platforms to ticketing systems. If you can sketch it, I can ship it.</p>
+    </div>
     <a href="#work" class="scroll-cue reveal">Scroll <span>↓</span></a>
   </div>
 </header>
 
-<section id="work" class="block wrap work">
-  <div class="work-head reveal">
-    <h2>Selected work.</h2>
-    <p class="mono-label">// WORK</p>
-  </div>
+<section id="work" class="work" style="--n:<?= max(1, count($projects)) ?>">
+  <div class="work-pin">
+    <div class="work-inner">
+      <aside class="work-side">
+        <h2>Selected work.</h2>
+        <p class="work-intro">Data platforms, internal tools and web apps, built end to end. Scroll to move through the projects.</p>
+        <nav class="work-thumbs" aria-label="Projects">
+          <?php foreach ($projects as $i => $p): $src = first_img($p); ?>
+            <button class="wthumb<?= $i === 0 ? ' active' : '' ?>" type="button" data-i="<?= $i ?>" aria-current="<?= $i === 0 ? 'true' : 'false' ?>" aria-label="<?= e($p['title'] ?? 'Project') ?>">
+              <span class="wthumb-img"><?php if ($src): ?><img src="<?= e($src) ?>" alt=""><?php endif; ?></span>
+              <span class="wthumb-mark" aria-hidden="true"></span>
+            </button>
+          <?php endforeach; ?>
+        </nav>
+        <p class="work-count mono-label" aria-hidden="true"><span id="work-cur">01</span> / <?= str_pad((string)count($projects), 2, '0', STR_PAD_LEFT) ?></p>
+      </aside>
 
-  <div class="work-grid">
-    <ol class="work-list">
-      <?php foreach ($projects as $i => $p):
-        $imgs = array_values(array_filter((array)($p['images'] ?? []), 'is_string'));
-        $link = safe_url($p['link'] ?? '');
-      ?>
-      <li class="work-item<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
-        <div class="work-row">
-          <span class="work-mark" aria-hidden="true"></span>
-          <span class="work-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
-          <div class="work-body">
-            <h3><?= e($p['title'] ?? '') ?></h3>
-            <p class="desc"><?= e($p['description'] ?? '') ?></p>
-            <?php if (!empty($p['tags'])): ?>
-              <div class="tags"><?php foreach ((array)$p['tags'] as $t): ?><span class="tag"><?= e((string)$t) ?></span><?php endforeach; ?></div>
-            <?php endif; ?>
-            <?php if ($imgs): ?>
-              <div class="work-inline"><img src="<?= e($imgs[0]) ?>" alt="<?= e($p['title'] ?? '') ?> screenshot" data-inline></div>
-            <?php endif; ?>
-            <?php if (count($imgs) > 1): ?>
-              <div class="thumbs">
-                <?php foreach ($imgs as $k => $src): ?>
-                  <button class="thumb" type="button" data-src="<?= e($src) ?>" aria-pressed="<?= $k === 0 ? 'true' : 'false' ?>" aria-label="Show image <?= $k + 1 ?> of <?= e($p['title'] ?? 'project') ?>"><img src="<?= e($src) ?>" alt=""></button>
-                <?php endforeach; ?>
-              </div>
-            <?php endif; ?>
-            <?php if ($link): ?><a class="proj-link" href="<?= e($link) ?>" target="_blank" rel="noopener">Visit project ↗</a><?php endif; ?>
-          </div>
+      <div class="work-main">
+        <div class="work-stage" aria-hidden="true">
+          <?php foreach ($projects as $i => $p): $src = first_img($p); ?>
+            <figure class="work-shot<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
+              <?php if ($src): ?><img src="<?= e($src) ?>" alt=""><?php endif; ?>
+            </figure>
+          <?php endforeach; ?>
         </div>
-      </li>
-      <?php endforeach; ?>
-    </ol>
 
-    <div class="work-media" aria-hidden="true">
-      <div class="work-sticky">
-        <?php foreach ($projects as $i => $p): $src = first_img($p); ?>
-          <figure class="work-shot<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
-            <?php if ($src): ?><img src="<?= e($src) ?>" alt="" data-main><?php endif; ?>
-          </figure>
-        <?php endforeach; ?>
+        <div class="work-details">
+          <?php foreach ($projects as $i => $p):
+            $src = first_img($p);
+            $link = safe_url($p['link'] ?? '');
+            $tags = array_filter(array_map('strval', (array)($p['tags'] ?? [])));
+          ?>
+          <article class="work-detail<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
+            <?php if ($src): ?><div class="work-inline"><img src="<?= e($src) ?>" alt="<?= e($p['title'] ?? '') ?> screenshot" loading="lazy"></div><?php endif; ?>
+            <div class="wd-row">
+              <h3 class="wd-title"><span><?= e($p['title'] ?? '') ?></span></h3>
+              <?php if ($tags): ?><p class="wd-tags"><?= implode(' — ', array_map(fn($t) => '[' . e(mb_strtoupper($t)) . ']', $tags)) ?></p><?php endif; ?>
+            </div>
+            <div class="wd-row wd-sub">
+              <p class="wd-desc"><?= e($p['description'] ?? '') ?></p>
+              <?php if ($link): ?><a class="proj-link" href="<?= e($link) ?>" target="_blank" rel="noopener">Visit project ↗</a><?php endif; ?>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        </div>
       </div>
     </div>
   </div>
@@ -155,16 +169,37 @@ function first_img(array $p): string
 </section>
 <?php endif; ?>
 
-<section id="skills" class="block wrap">
-  <h2 class="sec-title reveal">Skills &amp; Stack</h2>
-  <div class="skills-grid">
-    <div class="skill-card reveal">
-      <p class="kicker">DEVELOPMENT</p>
-      <div class="chips"><?php foreach (['HTML5','CSS3','JavaScript','PHP','Vue.js','Node.js','MySQL','Git'] as $s): ?><span class="chip"><?= e($s) ?></span><?php endforeach; ?></div>
+<section id="skills" class="skills">
+  <div class="wrap">
+    <div class="skills-head reveal">
+      <h2>Skills &amp; stack.</h2>
+      <p class="mono-label">// SKILLS</p>
     </div>
-    <div class="skill-card reveal">
-      <p class="kicker">DESIGN</p>
-      <div class="chips"><?php foreach (['Figma','UI Design','Responsive Layouts','Prototyping'] as $s): ?><span class="chip"><?= e($s) ?></span><?php endforeach; ?></div>
+    <div class="skills-layout">
+      <ol class="skill-list">
+        <?php foreach ($skills as $i => $s): ?>
+        <li class="skill-item<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
+          <span class="skill-mark" aria-hidden="true"></span>
+          <span class="skill-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+          <div class="skill-body">
+            <h3><?= e($s['title']) ?></h3>
+            <p><?= e($s['text']) ?></p>
+            <p class="skill-chips"><?= e(implode(' · ', $s['chips'])) ?></p>
+          </div>
+        </li>
+        <?php endforeach; ?>
+      </ol>
+      <div class="skill-media" aria-hidden="true">
+        <?php foreach ($skills as $i => $s): $img = 'assets/skills/' . str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) . '.webp'; ?>
+          <figure class="skill-shot<?= $i === 0 ? ' active' : '' ?>" data-i="<?= $i ?>">
+            <?php if (is_file(__DIR__ . '/' . $img)): ?>
+              <img src="<?= e($img) ?>" alt="">
+            <?php else: ?>
+              <div class="skill-ph"><span><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span><b><?= e($s['title']) ?></b></div>
+            <?php endif; ?>
+          </figure>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
 </section>

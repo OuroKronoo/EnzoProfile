@@ -1,1 +1,86 @@
-{"projects":[{"id":"28498a94f30e","link":"","published":true,"createdAt":1792799594828,"label":"Mangrove","title":"MAPS: Mangrove Analytics & Prediction System","images":["assets/shot-maps.webp"],"tags":["Web App","Prediction Model","HTML / CSS / JS"],"description":"A web platform that predicts mangrove survivability and population growth, helping planters and coastal communities see how many of their mangroves will thrive over time, and plan reforestation with real numbers."},{"id":"6f9dfc6b18b3","link":"","published":true,"createdAt":1792799594828,"label":"ECONYPA","title":"Stellaris","images":["assets/shot-econypa.webp"],"tags":["Web App","Vue + Vite","SPA"],"description":"An eco-focused web platform promoting sustainable use of nipa and local resources. Built as a modern single-page app with a fast, component-driven front end."},{"id":"b8cdeed36f4e","link":"","published":true,"createdAt":1792799594828,"label":"RSCI","title":"RSCI Ticketing System","images":["assets/shot-rsci.webp"],"tags":["Internal Tool","Ticketing","Full-stack"],"description":"A ticketing and request-tracking system built for RSCI: submissions, status updates, and resolution in one place, so nothing gets lost in email threads."},{"id":"37fbdf2f8c6a","createdAt":1792800281621,"title":"Kim","description":"kim","link":"","label":"kim","tags":["webapp"],"images":["uploads/9df68956507f03e01b0b76f6.webp"],"published":true}],"reviews":[{"id":"6a889005ea38","createdAt":1792800204652,"name":"Rhainier Lim","rating":5,"text":"May Bitaw, rapsa","date":"2026-08","photo":"uploads/39f25275423b43e4cfd202a1.webp","role":"","service":"Very Important Website","published":true}]}
+{
+    "projects": [
+        {
+            "id": "28498a94f30e",
+            "link": "",
+            "published": true,
+            "createdAt": 1792799594828,
+            "label": "Mangrove",
+            "title": "MAPS: Mangrove Analytics & Prediction System",
+            "images": [
+                "assets/shot-maps.webp"
+            ],
+            "tags": [
+                "Web App",
+                "Prediction Model",
+                "HTML / CSS / JS"
+            ],
+            "description": "A web platform that predicts mangrove survivability and population growth, helping planters and coastal communities see how many of their mangroves will thrive over time, and plan reforestation with real numbers."
+        },
+        {
+            "id": "6f9dfc6b18b3",
+            "link": "",
+            "published": true,
+            "createdAt": 1792799594828,
+            "label": "ECONYPA",
+            "title": "Stellaris",
+            "images": [
+                "assets/shot-econypa.webp"
+            ],
+            "tags": [
+                "Web App",
+                "Vue + Vite",
+                "SPA"
+            ],
+            "description": "An eco-focused web platform promoting sustainable use of nipa and local resources. Built as a modern single-page app with a fast, component-driven front end."
+        },
+        {
+            "id": "b8cdeed36f4e",
+            "link": "",
+            "published": true,
+            "createdAt": 1792799594828,
+            "label": "RSCI",
+            "title": "RSCI Ticketing System",
+            "images": [
+                "assets/shot-rsci.webp"
+            ],
+            "tags": [
+                "Internal Tool",
+                "Ticketing",
+                "Full-stack"
+            ],
+            "description": "A ticketing and request-tracking system built for RSCI: submissions, status updates, and resolution in one place, so nothing gets lost in email threads."
+        },
+        {
+            "id": "37fbdf2f8c6a",
+            "createdAt": 1792800281621,
+            "title": "JAC Motors Inventory System",
+            "description": "Inventory",
+            "link": "",
+            "label": "kim",
+            "tags": [
+                "webapp",
+                "Vue",
+                "QR Tech"
+            ],
+            "images": [
+                "uploads/9df68956507f03e01b0b76f6.webp"
+            ],
+            "published": true
+        }
+    ],
+    "reviews": [
+        {
+            "id": "6a889005ea38",
+            "createdAt": 1792800204652,
+            "name": "Rhainier Lim",
+            "rating": 5,
+            "text": "May Bitaw, rapsa",
+            "date": "2026-08",
+            "photo": "uploads/39f25275423b43e4cfd202a1.webp",
+            "role": "",
+            "service": "Very Important Website",
+            "published": true
+        }
+    ]
+}

@@ -6,7 +6,7 @@
   function start() {
     document.body.classList.add('ready');
     reveal();
-    updateWork();
+    onScroll();
   }
 
   // Loading intro: counts 0 -> 100 once per visit, then lifts away.
@@ -14,7 +14,7 @@
   try { seen = sessionStorage.getItem('krd-intro') === '1'; } catch (e) {}
   if (reduce || seen) {
     loader.remove();
-    start();
+    setTimeout(start, 0); // after the rest of this script has set up the sections
   } else {
     var n = 0;
     var t = setInterval(function () {
@@ -60,53 +60,91 @@
   menu.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
   addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); btn.focus(); } });
 
-  /* Work: the item nearest the middle of the screen is highlighted and its image shows on the right. */
-  var items = Array.prototype.slice.call(document.querySelectorAll('.work-item'));
-  var shots = Array.prototype.slice.call(document.querySelectorAll('.work-shot'));
+  function all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+  /* Work: the section pins to the screen; scroll progress through it picks the project. */
+  var work = document.getElementById('work');
+  var stage = document.querySelector('.work-stage');
+  var shots = all('.work-shot');
+  var details = all('.work-detail');
+  var wthumbs = all('.wthumb');
+  var curLabel = document.getElementById('work-cur');
+  var pinMQ = matchMedia('(min-width: 901px) and (min-height: 561px)');
   var current = 0;
-  function setActive(i) {
+  var leaveTimer;
+
+  function setWork(i) {
+    if (i === current) return;
+    var prev = current;
     current = i;
-    items.forEach(function (el, k) { el.classList.toggle('active', k === i); });
-    shots.forEach(function (el, k) { el.classList.toggle('active', k === i); });
+    if (stage) {
+      stage.dataset.dir = i > prev ? 'fwd' : 'back';
+      void stage.offsetWidth; // apply the start edge of the wipe before it runs
+    }
+    shots.forEach(function (el, k) {
+      el.classList.toggle('leaving', k === prev);
+      el.classList.toggle('active', k === i);
+    });
+    clearTimeout(leaveTimer);
+    leaveTimer = setTimeout(function () {
+      shots.forEach(function (el) { el.classList.remove('leaving'); });
+    }, reduce ? 0 : 1000);
+    details.forEach(function (el, k) { el.classList.toggle('active', k === i); });
+    wthumbs.forEach(function (el, k) {
+      el.classList.toggle('active', k === i);
+      el.setAttribute('aria-current', k === i ? 'true' : 'false');
+    });
+    if (curLabel) curLabel.textContent = String(i + 1).padStart(2, '0');
   }
-  var ticking = false;
+
+  function workProgress() {
+    var r = work.getBoundingClientRect();
+    var run = r.height - innerHeight;
+    return run > 0 ? Math.min(Math.max(-r.top / run, 0), 0.9999) : 0;
+  }
+
   function updateWork() {
-    ticking = false;
-    if (!items.length) return;
-    var mid = innerHeight * 0.45, best = 0, bestD = Infinity;
-    items.forEach(function (el, k) {
-      var r = el.getBoundingClientRect();
+    if (!work || !shots.length || !pinMQ.matches) return;
+    setWork(Math.floor(workProgress() * shots.length));
+  }
+
+  // Thumbnail click scrolls to that project's step, so scrolling and clicking stay in sync.
+  wthumbs.forEach(function (b, k) {
+    b.addEventListener('click', function () {
+      var top = work.getBoundingClientRect().top + scrollY;
+      var run = work.offsetHeight - innerHeight;
+      scrollTo({ top: top + run * ((k + 0.15) / shots.length), behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* Skills: the item nearest the middle of the screen highlights and its picture shows. */
+  var skillItems = all('.skill-item');
+  var skillShots = all('.skill-shot');
+  var skillCur = 0;
+  function updateSkills() {
+    if (!skillItems.length) return;
+    var mid = innerHeight * 0.5, best = 0, bestD = Infinity;
+    skillItems.forEach(function (el, k) {
+      var r = el.querySelector('.skill-body').getBoundingClientRect();
       var d = Math.abs(r.top + r.height / 2 - mid);
       if (d < bestD) { bestD = d; best = k; }
     });
-    if (best !== current) setActive(best);
+    if (best === skillCur) return;
+    skillCur = best;
+    skillItems.forEach(function (el, k) { el.classList.toggle('active', k === best); });
+    skillShots.forEach(function (el, k) { el.classList.toggle('active', k === best); });
+  }
+
+  var ticking = false;
+  function onScroll() {
+    ticking = false;
+    updateWork();
+    updateSkills();
   }
   addEventListener('scroll', function () {
-    if (!ticking) { ticking = true; requestAnimationFrame(updateWork); }
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
-  addEventListener('resize', updateWork);
-
-  // Clicking a project jumps it into focus.
-  items.forEach(function (el, k) {
-    el.addEventListener('click', function (e) {
-      if (e.target.closest('a,button')) return;
-      setActive(k);
-    });
-  });
-
-  // Thumbnails swap that project's image (desktop panel and mobile inline copy).
-  items.forEach(function (item, k) {
-    var panel = shots[k] && shots[k].querySelector('[data-main]');
-    var inline = item.querySelector('[data-inline]');
-    item.querySelectorAll('.thumb').forEach(function (b) {
-      b.addEventListener('click', function () {
-        if (panel) panel.src = b.dataset.src;
-        if (inline) inline.src = b.dataset.src;
-        item.querySelectorAll('.thumb').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        setActive(k);
-      });
-    });
-  });
+  addEventListener('resize', onScroll);
 
   // Hero photo drifts slightly on scroll.
   var photo = document.getElementById('hero-photo');
